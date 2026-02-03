@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, useEffect, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, Stars, Text, Billboard } from '@react-three/drei'
+import { OrbitControls, Stars } from '@react-three/drei'
 import * as THREE from 'three'
 
 // Hook para detectar móvil
@@ -21,8 +21,8 @@ function useIsMobile() {
   return isMobile
 }
 
-// Cubo de Balance 3D con etiqueta
-function BalanceCube({ balance, pnl, isMobile }: { balance: number; pnl: number; isMobile: boolean }) {
+// Cubo de Balance 3D
+function BalanceCube({ pnl, isMobile }: { pnl: number; isMobile: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null)
   
   useFrame((state) => {
@@ -48,26 +48,6 @@ function BalanceCube({ balance, pnl, isMobile }: { balance: number; pnl: number;
           emissiveIntensity={0.3}
         />
       </mesh>
-      {/* Etiqueta flotante */}
-      <Billboard position={[0, 1.5, 0]}>
-        <Text
-          fontSize={0.4}
-          color="white"
-          anchorX="center"
-          anchorY="middle"
-        >
-          BALANCE
-        </Text>
-        <Text
-          fontSize={0.3}
-          color={pnl >= 0 ? '#10b981' : '#ef4444'}
-          anchorX="center"
-          anchorY="middle"
-          position={[0, -0.5, 0]}
-        >
-          {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)} USDT
-        </Text>
-      </Billboard>
     </group>
   )
 }
@@ -115,7 +95,7 @@ function PnLParticles({ pnl, isMobile }: { pnl: number; isMobile: boolean }) {
       for (let i = 0; i < count; i++) {
         const i3 = i * 3
         positions[i3 + 1] += pnl >= 0 ? 0.03 : -0.03
-        const limit = isMobile ? 6 : 9
+        const limit = isMobile ? 7.5 : 10
         if (positions[i3 + 1] > limit) positions[i3 + 1] = -limit
         if (positions[i3 + 1] < -limit) positions[i3 + 1] = limit
       }
@@ -223,7 +203,7 @@ export default function SceneInner() {
         
         <DataRing isMobile={isMobile} />
         <TradingGlobe isMobile={isMobile} />
-        <BalanceCube balance={balance} pnl={pnl} isMobile={isMobile} />
+        <BalanceCube pnl={pnl} isMobile={isMobile} />
         <PnLParticles pnl={pnl} isMobile={isMobile} />
         
         <OrbitControls 
@@ -241,60 +221,150 @@ export default function SceneInner() {
         />
       </Canvas>
       
-      {/* UI Overlay - Dashboard Header */}
-      <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-b from-black/80 to-transparent z-10">
-        <div className="flex justify-between items-start">
+      {/* UI HEADER */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        padding: isMobile ? '12px' : '16px',
+        background: 'linear-gradient(to bottom, rgba(0,0,0,0.9), transparent)',
+        zIndex: 10
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h1 className="text-lg sm:text-2xl font-bold text-white">Trading Dashboard 3D</h1>
-            <p className="text-xs sm:text-sm text-gray-400">BTC/USDT • Binance Testnet</p>
+            <h1 style={{ 
+              fontSize: isMobile ? '18px' : '24px', 
+              fontWeight: 'bold', 
+              color: 'white',
+              margin: 0 
+            }}>
+              Trading Dashboard 3D
+            </h1>
+            <p style={{ 
+              fontSize: isMobile ? '12px' : '14px', 
+              color: '#9ca3af',
+              margin: '4px 0 0 0'
+            }}>
+              BTC/USDT • Binance Testnet
+            </p>
           </div>
-          <div className="text-right">
-            <div className="text-xs sm:text-sm text-gray-400">Estado</div>
-            <div className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              <span className="text-xs sm:text-sm text-green-400">Activo</span>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: isMobile ? '12px' : '14px', color: '#9ca3af' }}>Estado</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
+              <span style={{ 
+                width: '8px', 
+                height: '8px', 
+                borderRadius: '50%', 
+                backgroundColor: '#22c55e',
+                display: 'inline-block'
+              }}></span>
+              <span style={{ fontSize: isMobile ? '12px' : '14px', color: '#4ade80' }}>Activo</span>
             </div>
           </div>
         </div>
       </div>
       
-      {/* UI Overlay - Métricas principales */}
-      <div className="absolute top-16 sm:top-20 left-2 sm:left-4 z-10 space-y-2">
-        <div className="bg-black/60 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-gray-800">
-          <div className="text-xs text-gray-400">Balance Total</div>
-          <div className="text-lg sm:text-xl font-bold text-white">${balance.toLocaleString()}</div>
+      {/* UI METRICS - Left */}
+      <div style={{
+        position: 'absolute',
+        top: isMobile ? '70px' : '90px',
+        left: isMobile ? '8px' : '16px',
+        zIndex: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px'
+      }}>
+        <div style={{
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          backdropFilter: 'blur(8px)',
+          borderRadius: '8px',
+          padding: isMobile ? '8px 12px' : '12px 16px',
+          border: '1px solid #374151'
+        }}>
+          <div style={{ fontSize: isMobile ? '11px' : '12px', color: '#9ca3af' }}>Balance Total</div>
+          <div style={{ 
+            fontSize: isMobile ? '18px' : '22px', 
+            fontWeight: 'bold', 
+            color: 'white' 
+          }}>
+            ${balance.toLocaleString()}
+          </div>
         </div>
-        <div className="bg-black/60 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-gray-800">
-          <div className="text-xs text-gray-400">PnL Hoy</div>
-          <div className={`text-lg sm:text-xl font-bold ${pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+        <div style={{
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          backdropFilter: 'blur(8px)',
+          borderRadius: '8px',
+          padding: isMobile ? '8px 12px' : '12px 16px',
+          border: '1px solid #374151'
+        }}>
+          <div style={{ fontSize: isMobile ? '11px' : '12px', color: '#9ca3af' }}>PnL Hoy</div>
+          <div style={{ 
+            fontSize: isMobile ? '18px' : '22px', 
+            fontWeight: 'bold', 
+            color: pnl >= 0 ? '#4ade80' : '#f87171'
+          }}>
             {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)} USDT
           </div>
         </div>
       </div>
       
-      {/* UI Overlay - Posición actual */}
-      <div className="absolute top-16 sm:top-20 right-2 sm:right-4 z-10">
-        <div className="bg-black/60 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-gray-800">
-          <div className="text-xs text-gray-400">Posición Actual</div>
-          <div className="text-sm sm:text-base font-bold text-green-400">LONG 0.002 BTC</div>
-          <div className="text-xs text-gray-400 mt-1">Entrada: $78,450</div>
+      {/* UI POSITION - Right */}
+      <div style={{
+        position: 'absolute',
+        top: isMobile ? '70px' : '90px',
+        right: isMobile ? '8px' : '16px',
+        zIndex: 10
+      }}>
+        <div style={{
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          backdropFilter: 'blur(8px)',
+          borderRadius: '8px',
+          padding: isMobile ? '8px 12px' : '12px 16px',
+          border: '1px solid #374151',
+          textAlign: 'right'
+        }}>
+          <div style={{ fontSize: isMobile ? '11px' : '12px', color: '#9ca3af' }}>Posición Actual</div>
+          <div style={{ 
+            fontSize: isMobile ? '14px' : '16px', 
+            fontWeight: 'bold', 
+            color: '#4ade80' 
+          }}>
+            LONG 0.002 BTC
+          </div>
+          <div style={{ fontSize: isMobile ? '10px' : '11px', color: '#9ca3af', marginTop: '4px' }}>
+            Entrada: $78,450
+          </div>
         </div>
       </div>
       
-      {/* UI Overlay - Controles */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-black/80 to-transparent z-10">
-        <div className="flex justify-between items-end">
-          <div className="text-white/60 text-xs sm:text-sm">
-            <p>{isMobile ? '👆 Toca y arrastra para rotar' : '🖱️ Arrastra para rotar'}</p>
-            <p>{isMobile ? '👌 Pellizca para zoom' : '📜 Scroll para zoom'}</p>
+      {/* UI FOOTER */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: isMobile ? '12px' : '16px',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)',
+        zIndex: 10
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: isMobile ? '11px' : '13px' }}>
+            <p style={{ margin: '0 0 2px 0' }}>{isMobile ? '👆 Toca y arrastra' : '🖱️ Arrastra para rotar'}</p>
+            <p style={{ margin: 0 }}>{isMobile ? '👌 Pellizca para zoom' : '📜 Scroll para zoom'}</p>
           </div>
-          <div className="text-right">
-            {isMobile && (
-              <span className="inline-block px-2 py-1 bg-blue-600/80 text-white text-xs rounded">
-                Modo Móvil
-              </span>
-            )}
-          </div>
+          {isMobile && (
+            <span style={{
+              display: 'inline-block',
+              padding: '4px 8px',
+              backgroundColor: 'rgba(37, 99, 235, 0.8)',
+              color: 'white',
+              fontSize: '11px',
+              borderRadius: '4px'
+            }}>
+              Modo Móvil
+            </span>
+          )}
         </div>
       </div>
     </div>
