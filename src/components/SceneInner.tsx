@@ -141,14 +141,16 @@ function AdaptiveCamera({ isMobile }: { isMobile: boolean }) {
   const { camera } = useThree()
   
   useEffect(() => {
-    if (isMobile) {
-      camera.position.set(0, 0, 12)
-      camera.fov = 75
-    } else {
-      camera.position.set(0, 0, 8)
-      camera.fov = 60
+    if (camera instanceof THREE.PerspectiveCamera) {
+      if (isMobile) {
+        camera.position.set(0, 0, 12)
+        camera.fov = 75
+      } else {
+        camera.position.set(0, 0, 8)
+        camera.fov = 60
+      }
+      camera.updateProjectionMatrix()
     }
-    camera.updateProjectionMatrix()
   }, [isMobile, camera])
   
   return null
