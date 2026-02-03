@@ -161,10 +161,10 @@ export default function SceneInner() {
   const pnl = 0.65
   
   return (
-    <div style={{ width: '100vw', height: '100vh', background: 'black', position: 'relative', overflow: 'hidden' }}>
-      {/* Canvas 3D - con pointer-events para no bloquear UI */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-        <Canvas style={{ pointerEvents: 'auto' }}>
+    <div className="relative w-screen h-screen bg-black overflow-hidden">
+      {/* CANVAS 3D - z-index bajo */}
+      <div className="absolute inset-0 z-0">
+        <Canvas>
           <AdaptiveCamera isMobile={isMobile} />
           <ambientLight intensity={0.7} />
           <pointLight position={[10, 10, 10]} intensity={1.2} />
@@ -196,97 +196,48 @@ export default function SceneInner() {
         </Canvas>
       </div>
       
-      {/* UI Overlay - zIndex alto y pointer-events */}
-      <div style={{ 
-        position: 'absolute', 
-        inset: 0, 
-        zIndex: 10, 
-        pointerEvents: 'none',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <div style={{ 
-          padding: '12px 16px', 
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.9), transparent)',
-          pointerEvents: 'auto'
-        }}>
-          <h1 style={{ color: 'white', fontWeight: 'bold', fontSize: '18px', margin: 0 }}>Trading Dashboard 3D</h1>
-          <p style={{ color: '#9ca3af', fontSize: '12px', margin: '4px 0 0 0' }}>BTC/USDT • Testnet</p>
+      {/* UI OVERLAY - z-index alto */}
+      <div className="absolute inset-0 z-50 pointer-events-none flex flex-col">
+        
+        {/* HEADER */}
+        <div className="pointer-events-auto p-3 bg-gradient-to-b from-black/95 to-transparent">
+          <h1 className="text-white font-bold text-xl">Trading Dashboard 3D</h1>
+          <p className="text-gray-400 text-sm">BTC/USDT • Testnet</p>
         </div>
         
-        {/* Métricas - Lado izquierdo */}
-        <div style={{ 
-          position: 'absolute', 
-          top: '70px', 
-          left: '12px', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: '8px',
-          pointerEvents: 'auto'
-        }}>
-          <div style={{ 
-            background: 'rgba(17,24,39,0.9)', 
-            padding: '12px', 
-            borderRadius: '8px', 
-            border: '1px solid #374151',
-            minWidth: '120px'
-          }}>
-            <div style={{ color: '#9ca3af', fontSize: '11px' }}>Balance</div>
-            <div style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>${balance.toLocaleString()}</div>
+        {/* MÉTRICAS IZQUIERDA */}
+        <div className="pointer-events-auto absolute top-16 left-3 flex flex-col gap-2">
+          <div className="bg-gray-900/95 border border-gray-700 rounded-lg p-3 min-w-[140px]">
+            <div className="text-gray-400 text-xs uppercase tracking-wider">Balance</div>
+            <div className="text-white font-bold text-xl">${balance.toLocaleString()}</div>
           </div>
-          <div style={{ 
-            background: 'rgba(17,24,39,0.9)', 
-            padding: '12px', 
-            borderRadius: '8px', 
-            border: '1px solid #374151',
-            minWidth: '120px'
-          }}>
-            <div style={{ color: '#9ca3af', fontSize: '11px' }}>PnL Hoy</div>
-            <div style={{ color: '#4ade80', fontWeight: 'bold', fontSize: '16px' }}>+{pnl} USDT</div>
+          <div className="bg-gray-900/95 border border-gray-700 rounded-lg p-3 min-w-[140px]">
+            <div className="text-gray-400 text-xs uppercase tracking-wider">PnL Hoy</div>
+            <div className="text-green-400 font-bold text-xl">+${pnl}</div>
           </div>
         </div>
         
-        {/* Posición - Lado derecho */}
-        <div style={{ 
-          position: 'absolute', 
-          top: '70px', 
-          right: '12px',
-          pointerEvents: 'auto'
-        }}>
-          <div style={{ 
-            background: 'rgba(17,24,39,0.9)', 
-            padding: '12px', 
-            borderRadius: '8px', 
-            border: '1px solid #374151',
-            textAlign: 'right',
-            minWidth: '100px'
-          }}>
-            <div style={{ color: '#9ca3af', fontSize: '11px' }}>Posición</div>
-            <div style={{ color: '#4ade80', fontWeight: 'bold', fontSize: '14px' }}>LONG</div>
-            <div style={{ color: 'white', fontSize: '12px' }}>0.002 BTC</div>
+        {/* POSICIÓN DERECHA */}
+        <div className="pointer-events-auto absolute top-16 right-3">
+          <div className="bg-gray-900/95 border border-gray-700 rounded-lg p-3 text-right min-w-[120px]">
+            <div className="text-gray-400 text-xs uppercase tracking-wider">Posición</div>
+            <div className="text-green-400 font-bold text-lg">LONG</div>
+            <div className="text-white text-sm">0.002 BTC</div>
           </div>
         </div>
         
-        {/* Footer */}
-        <div style={{ 
-          marginTop: 'auto', 
-          padding: '12px 16px', 
-          background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          pointerEvents: 'auto'
-        }}>
-          <div style={{ color: '#9ca3af', fontSize: '11px' }}>
-            {isMobile ? '👆 Toca y arrastra' : '🖱️ Arrastra para rotar'}
-          </div>
+        {/* FOOTER */}
+        <div className="pointer-events-auto mt-auto p-3 bg-gradient-to-t from-black/95 to-transparent flex justify-between items-center">
+          <span className="text-gray-400 text-xs">
+            {isMobile ? '👆 Toca y arrastra para rotar' : '🖱️ Arrastra para rotar • Scroll para zoom'}
+          </span>
           {isMobile && (
-            <span style={{ background: '#2563eb', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '4px' }}>
-              Móvil
+            <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">
+              Modo Móvil
             </span>
           )}
         </div>
+        
       </div>
     </div>
   )
