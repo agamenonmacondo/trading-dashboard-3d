@@ -104,7 +104,7 @@ export default function SceneInner() {
   
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden">
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0" style={{width:"100%",height:"100%"}}>
         <Canvas>
           <AdaptiveCamera isMobile={isMobile} />
           <ambientLight intensity={0.7} />
